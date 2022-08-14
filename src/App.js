@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import { lazy, Suspense } from 'react';
+import {  Navigate, Routes, Route } from 'react-router-dom';
+
+// context
+import ProductContextProvider from "./contexts/ProductContextProvider";
+import CardContextProvider from "./contexts/CardContextProvider";
+import Navbar from "./components/common/Navbar";
+
+// components with lazy loading
+const DetailsPage = lazy(() => import("./components/DetailsPage"));
+const ShopCard = lazy(() => import("./components/ShopCard"));
+const Store = lazy(() => import('./components/Store'));
+
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+    <ProductContextProvider>
+      <CardContextProvider>
+        <Navbar />
+        < Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/products" element={<Store />} />
+            <Route path="/cards" element={<ShopCard />} />
+            <Route path="/products/:id" element={<DetailsPage />} />
+            <Route path="/*" element={<Navigate to="/products" />} />
+          </Routes>
+        </Suspense>
+      </CardContextProvider>
+    </ProductContextProvider>
   );
-}
+};
 
 export default App;
+
